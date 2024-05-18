@@ -15,6 +15,16 @@ module processor;
     reg [31:0] registerfile[0:31];
     integer i;
 
+	reg status_register[0:2];
+
+	always @(posedge clk)
+        begin
+			status[0]=zout;
+			status[1]=sum[31];
+			status[2]=overflow;
+        end
+
+
     // Data memory write
     always @(posedge clk)
         if (memwrite) begin
