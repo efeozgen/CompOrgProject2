@@ -17,12 +17,52 @@ module processor;
 
 	reg status_register[0:2];
 
+<<<<<<< Updated upstream
 	always @(posedge clk)
         begin
 			status[0]=zout;
 			status[1]=sum[31];
 			status[2]=overflow;
         end
+=======
+wire [31:0] instruc,	//current instruction
+dpack;	//Read data output of memory (data read from memory)
+
+wire [2:0] gout;	//Output of ALU control unit
+
+wire zout,	//Zero output of ALU
+pcsrc,	//Output of AND gate with Branch and ZeroOut inputs
+//Control signals
+regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0;
+
+//32-size register file (32 bit(1 word) for each register)
+reg [31:0] registerfile[0:31];
+//Z, N, V flags
+reg [2:0];
+integer i;
+
+// datamemory connections
+
+always @(posedge clk)
+//write data to memory
+if (memwrite)
+begin 
+//sum stores address,datab stores the value to be written
+datmem[sum[4:0]+3]=datab[7:0];
+datmem[sum[4:0]+2]=datab[15:8];
+datmem[sum[4:0]+1]=datab[23:16];
+datmem[sum[4:0]]=datab[31:24];
+end
+
+//instruction memory
+//4-byte instruction
+ assign instruc={mem[pc[4:0]],mem[pc[4:0]+1],mem[pc[4:0]+2],mem[pc[4:0]+3]};
+ assign inst31_26=instruc[31:26];
+ assign inst25_21=instruc[25:21];
+ assign inst20_16=instruc[20:16];
+ assign inst15_11=instruc[15:11];
+ assign inst15_0=instruc[15:0];
+>>>>>>> Stashed changes
 
 
     // Data memory write

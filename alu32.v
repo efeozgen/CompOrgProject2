@@ -21,12 +21,18 @@ begin
             end
 
     3'b111: begin 
+<<<<<<< Updated upstream
 		overflow=0;
 		less=a+1+(~b);    //ALU control line=111, set on less than
+=======
+        overflow=0;
+        less=a+1+(~b);    //ALU control line=111, set on less than
+>>>>>>> Stashed changes
             if (less[31]) sum=1;
             else sum=0;
           end
     3'b000: begin
+<<<<<<< Updated upstream
 		overflow=0;
 		sum=a & b;    //ALU control line=000, AND
 			end
@@ -34,6 +40,15 @@ begin
 		overflow=0;
 		sum=a|b;        //ALU control line=001, OR
 			end
+=======
+        overflow=0;
+        sum=a & b;    //ALU control line=000, AND
+            end
+    3'b001: begin
+        overflow=0;
+        sum=a|b;        //ALU control line=001, OR
+            end
+>>>>>>> Stashed changes
     default: sum=31'bx;
     endcase
 zout=~(|sum);
