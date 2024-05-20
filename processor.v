@@ -41,13 +41,12 @@ regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,bal
 reg [31:0] registerfile[0:31];
 
 integer i;
-
+assign writedata = dataa ? jrsal: datab;
 // datamemory connections
 
 always @(posedge clk)
 //write data to memory
 if (memwrite)
-mult2_to1_to_32(writedata,datab,dataa,jrsal);
 begin 
 //sum stores address,datab stores the value to be written
 datmem[sum[4:0]+3]=writedata[7:0];
@@ -82,7 +81,7 @@ mult2_to_1_5  mult1(out1, instruc[20:16],instruc[15:11],regdest);
 
 //mux with jrsal signal and sum
 mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
-mult2_to_1_32 mult7(out7, datab, dataa, jrsal)
+mult2_to_1_32 mult7(out7, datab, dataa, jrsal);
 //mux with ALUSrc control
 //Değiştirdik not!
 mult2_to_1_32 mult2(out2, datab,out5,alusrc);
