@@ -9,11 +9,13 @@ out2,		//Output of mux with ALUSrc control-mult2
 out3,		//Output of mux with MemToReg control-mult3
 out4,		//Output of mux with (Branch&ALUZero) control-mult4
 out5,		//Output of mux with Ori control-mult5
+out6,           //Output of mux with alu result and dataa
 sum,		//ALU result
 extad,	//Output of sign-extend unit
 extzero, //Output of zero-extend unit
 adder1out,	//Output of adder which adds PC and 4-add1
 adder2out,	//Output of adder which adds PC+4 and 2 shifted sign-extend result-add2
+writedata,
 sextad;	//Output of shift left 2 unit
 
 wire [5:0] inst31_26;	//31-26 bits of instruction
@@ -33,7 +35,7 @@ wire [2:0] gout;	//Output of ALU control unit
 wire zout,	//Zero output of ALU
 pcsrc,	//Output of AND gate with Branch and ZeroOut inputs
 //Control signals
-regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0;
+regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori;
 
 //32-size register file (32 bit(1 word) for each register)
 reg [31:0] registerfile[0:31];
@@ -45,12 +47,13 @@ integer i;
 always @(posedge clk)
 //write data to memory
 if (memwrite)
+mult2_to1_to_32(writedata,datab,dataa,jrsal);
 begin 
 //sum stores address,datab stores the value to be written
-datmem[sum[4:0]+3]=datab[7:0];
-datmem[sum[4:0]+2]=datab[15:8];
-datmem[sum[4:0]+1]=datab[23:16];
-datmem[sum[4:0]]=datab[31:24];
+datmem[sum[4:0]+3]=writedata[7:0];
+datmem[sum[4:0]+2]=writedata[15:8];
+datmem[sum[4:0]+1]=writedata[23:16];
+datmem[sum[4:0]]=writedata[31:24];
 end
 
 //instruction memory
@@ -77,12 +80,18 @@ assign dpack={datmem[sum[5:0]],datmem[sum[5:0]+1],datmem[sum[5:0]+2],datmem[sum[
 //mux with RegDst control
 mult2_to_1_5  mult1(out1, instruc[20:16],instruc[15:11],regdest);
 
+//mux with jrsal signal and sum
+mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
+mult2_to_1_32 mult7(out7, datab, dataa, jrsal)
 //mux with ALUSrc control
 //Değiştirdik not!
 mult2_to_1_32 mult2(out2, datab,out5,alusrc);
 
 //mux with MemToReg control
 mult2_to_1_32 mult3(out3, sum,dpack,memtoreg);
+
+//mux with dpack and out4
+mult2_to_1_to_32 mult8(out8, out4, dpack, jrsal);
 
 //mux with (Branch&ALUZero) control
 mult2_to_1_32 mult4(out4, adder1out,adder2out,pcsrc);
@@ -92,7 +101,7 @@ mult2_to_1_32 mult5(out5, extad, extzero, ori);
 
 // load pc
 always @(negedge clk)
-pc=out4;
+pc=out8;
 
 // alu, adder and control logic connections
 
@@ -107,7 +116,7 @@ adder add2(adder1out,sextad,adder2out);
 
 //Control unit
 control cont(instruc[31:26],regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,
-aluop1,aluop0);
+aluop1,aluop0,jrsal,baln);
 
 //Sign extend unit
 signext sext(instruc[15:0],extad);
