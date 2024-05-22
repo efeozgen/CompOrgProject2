@@ -11,6 +11,10 @@ out3,		//Output of mux with MemToReg control-mult3
 out4,		//Output of mux with (Branch&ALUZero) control-mult4
 out5,		//Output of mux with Ori control-mult5
 out6,           //Output of mux with alu result and dataa
+out7,
+out8,
+out9,
+out10,
 pcnext,         //output of baln check
 sum,		//ALU result
 extad,	//Output of sign-extend unit
@@ -40,7 +44,7 @@ wire [2:0] gout;	//Output of ALU control unit
 wire zout,	//Zero output of ALU
 pcsrc,	//Output of AND gate with Branch and ZeroOut inputs
 //Control signals
-regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori;
+regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori,jmnor;
 
 //32-size register file (32 bit(1 word) for each register)
 reg [31:0] registerfile[0:31];
@@ -61,7 +65,10 @@ datmem[sum[4:0]+1]=writedata[23:16];
 datmem[sum[4:0]]=writedata[31:24];
 end
 assign nextpc = pc+4;
-mult2_to_1_32 multpc(pcreg,out1,nextpc,baln);
+// or baln, jmnor
+assign linkpc= baln|jmnor;
+mult2_to_1_32 multpc(out10,out1,nextpc,linkpc);
+mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor);
 
 //instruction memory
 //4-byte instruction
@@ -87,10 +94,11 @@ assign dpack={datmem[sum[5:0]],datmem[sum[5:0]+1],datmem[sum[5:0]+2],datmem[sum[
 //multiplexers
 //baln check
 assign balncheck = (baln)&&(aluN);
-mult2_to_1_32 multbaln(pcnext,out7,extad,balncheck);
+mult2_to_1_32 multbaln(out9,out7,extad,balncheck);
 //mux with RegDst control
 mult2_to_1_5  mult1(out1, instruc[20:16],instruc[15:11],regdest);
-
+//mux to check jmnor
+mult2_to_1_32 multjmnor(pcnext,out9,dpack,jmnor);
 //mux with jrsal signal and sum
 mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
 mult2_to_1_32 mult7(out7, datab, dataa, jrsal);
@@ -127,7 +135,7 @@ adder add2(adder1out,sextad,adder2out);
 
 //Control unit
 control cont(instruc[31:26],regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,
-aluop1,aluop0,jrsal,baln);
+aluop1,aluop0,jrsal,baln,jmnor);
 
 //Sign extend unit
 signext sext(instruc[15:0],extad);

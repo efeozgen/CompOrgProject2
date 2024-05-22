@@ -45,6 +45,12 @@ output reg V;
         N <= sum[31]; // Negative flag based on MSB of result
         V <= 0; // No overflow for OR
 	end
+      3'b011:
+       begin
+       sum <= ~(a|b);
+       N <= sum[31];
+       V <= 0;
+       end
       default: sum <= 32'bx;
     endcase
     zout <= ~(|sum);
