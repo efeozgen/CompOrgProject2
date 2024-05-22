@@ -1,3 +1,4 @@
+`define CONSTANT_1 1
 module processor;
 reg [31:0] pc; //32-bit prograom counter
 reg clk; //clock
@@ -10,14 +11,18 @@ out3,		//Output of mux with MemToReg control-mult3
 out4,		//Output of mux with (Branch&ALUZero) control-mult4
 out5,		//Output of mux with Ori control-mult5
 out6,           //Output of mux with alu result and dataa
+pcnext,         //output of baln check
 sum,		//ALU result
 extad,	//Output of sign-extend unit
 extzero, //Output of zero-extend unit
 adder1out,	//Output of adder which adds PC and 4-add1
 adder2out,	//Output of adder which adds PC+4 and 2 shifted sign-extend result-add2
 writedata,
-sextad;	//Output of shift left 2 unit
-
+pcreg,		//thw value to be written in register
+nextpc,		//pc+4
+aluN,   //if alu result negative 1
+aluV,   //if alu result overflowed 1
+sextad;	//Output of shift left 2 unit 
 wire [5:0] inst31_26;	//31-26 bits of instruction
 wire [4:0] 
 inst25_21,	//25-21 bits of instruction
@@ -45,6 +50,7 @@ assign writedata = dataa ? jrsal: datab;
 // datamemory connections
 
 always @(posedge clk)
+
 //write data to memory
 if (memwrite)
 begin 
@@ -54,6 +60,8 @@ datmem[sum[4:0]+2]=writedata[15:8];
 datmem[sum[4:0]+1]=writedata[23:16];
 datmem[sum[4:0]]=writedata[31:24];
 end
+assign nextpc = pc+4;
+mult2_to_1_32 multpc(pcreg,out1,nextpc,baln);
 
 //instruction memory
 //4-byte instruction
@@ -70,12 +78,16 @@ end
 assign dataa=registerfile[inst25_21];//Read register 1
 assign datab=registerfile[inst20_16];//Read register 2
 always @(posedge clk)
- registerfile[out1]= regwrite ? out3:registerfile[out1];//Write data to register
+ 
+ registerfile[pcreg]= regwrite ? out3:registerfile[out1];//Write data to register
 
 //read data from memory, sum stores address
 assign dpack={datmem[sum[5:0]],datmem[sum[5:0]+1],datmem[sum[5:0]+2],datmem[sum[5:0]+3]};
 
 //multiplexers
+//baln check
+assign balncheck = (baln)&&(aluN);
+mult2_to_1_32 multbaln(pcnext,out7,extad,balncheck);
 //mux with RegDst control
 mult2_to_1_5  mult1(out1, instruc[20:16],instruc[15:11],regdest);
 
@@ -100,12 +112,12 @@ mult2_to_1_32 mult5(out5, extad, extzero, ori);
 
 // load pc
 always @(negedge clk)
-pc=out8;
+pc=pcnext;
 
 // alu, adder and control logic connections
 
 //ALU unit
-alu32 alu1(sum,dataa,out2,zout,gout);
+alu32 alu1(sum,dataa,out2,gout,zout,aluN,aluv);
 
 //adder which adds PC and 4
 adder add1(pc,32'h4,adder1out);

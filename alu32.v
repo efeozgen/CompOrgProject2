@@ -1,4 +1,4 @@
-module alu32(sum, a, b, gin,0, zout, N, V);
+module alu32(sum, a, b, gin, zout, N, V);
 output [31:0] sum;
 input [31:0] a, b;
 input [2:0] gin; // ALU control line
