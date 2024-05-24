@@ -1,4 +1,3 @@
-`define CONSTANT_1 1
 module processor;
 reg [31:0] pc; //32-bit prograom counter
 reg clk; //clock
@@ -6,6 +5,7 @@ reg [7:0] datmem[0:31],mem[0:31]; //32-size data and instruction memory (8 bit(1
 wire [31:0] 
 dataa,	//Read data 1 output of Register File
 datab,	//Read data 2 output of Register File
+out1,
 out2,		//Output of mux with ALUSrc control-mult2
 out3,		//Output of mux with MemToReg control-mult3
 out4,		//Output of mux with (Branch&ALUZero) control-mult4
@@ -24,18 +24,17 @@ adder2out,	//Output of adder which adds PC+4 and 2 shifted sign-extend result-ad
 writedata,
 pcreg,		//thw value to be written in register
 nextpc,		//pc+4
-aluN,   //if alu result negative 1
-aluV,   //if alu result overflowed 1
 sextad;	//Output of shift left 2 unit 
 wire [5:0] inst31_26;	//31-26 bits of instruction
 wire [4:0] 
 inst25_21,	//25-21 bits of instruction
 inst20_16,	//20-16 bits of instruction
 inst15_11,	//15-11 bits of instruction
-out1;		//Write data input of Register File
-
+out0;
+wire aluN, aluV;   //if alu result negative 1, if alu result overflowed 1
+reg balncheck;
 wire [15:0] inst15_0;	//15-0 bits of instruction
-
+wire nSignal_q, zSignal_q;
 wire [31:0] instruc,	//current instruction
 dpack;	//Read data output of memory (data read from memory)
 
@@ -67,8 +66,7 @@ end
 assign nextpc = pc+4;
 // or baln, jmnor
 assign linkpc= baln|jmnor;
-mult2_to_1_32 multpc(out10,out1,nextpc,linkpc);
-mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor);
+
 
 //instruction memory
 //4-byte instruction
@@ -93,10 +91,9 @@ assign dpack={datmem[sum[5:0]],datmem[sum[5:0]+1],datmem[sum[5:0]+2],datmem[sum[
 
 //multiplexers
 //baln check
-assign balncheck = (baln)&&(aluN);
 mult2_to_1_32 multbaln(out9,out7,extad,balncheck);
 //mux with RegDst control
-mult2_to_1_5  mult1(out1, instruc[20:16],instruc[15:11],regdest);
+mult2_to_1_5  mult1(out0, instruc[20:16],instruc[15:11],regdest);
 //mux to check jmnor
 mult2_to_1_32 multjmnor(pcnext,out9,dpack,jmnor);
 //mux with jrsal signal and sum
@@ -110,13 +107,20 @@ mult2_to_1_32 mult2(out2, datab,out5,alusrc);
 mult2_to_1_32 mult3(out3, sum,dpack,memtoreg);
 
 //mux with dpack and out4
-mult2_to_1_to_32 mult8(out8, out4, dpack, jrsal);
+mult2_to_1_32 mult8(out8, out4, dpack, jrsal);
 
 //mux with (Branch&ALUZero) control
 mult2_to_1_32 mult4(out4, adder1out,adder2out,pcsrc);
 
 //mux with Ori control
 mult2_to_1_32 mult5(out5, extad, extzero, ori);
+
+mult2_to_1_32 multpc(out10,out1,nextpc,linkpc);
+
+mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor);
+
+flipflop flipflop(nSignal, clk, nSignal_q);
+flipflop flipflop2(zSignal, clk, zSignal_q);
 
 // load pc
 always @(negedge clk)
@@ -125,7 +129,9 @@ pc=pcnext;
 // alu, adder and control logic connections
 
 //ALU unit
-alu32 alu1(sum,dataa,out2,gout,zout,aluN,aluv);
+alu32 alu1(sum,dataa,out2,gout,zout,aluN,aluV);
+
+assign balncheck = (baln)&&(aluN);
 
 //adder which adds PC and 4
 adder add1(pc,32'h4,adder1out);
@@ -135,7 +141,7 @@ adder add2(adder1out,sextad,adder2out);
 
 //Control unit
 control cont(instruc[31:26],regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,
-aluop1,aluop0,jrsal,baln,jmnor);
+aluop1,aluop0,ori,jrsal,baln,jmnor,nsignal_q);
 
 //Sign extend unit
 signext sext(instruc[15:0],extad);
