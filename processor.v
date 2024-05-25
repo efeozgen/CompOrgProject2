@@ -22,7 +22,7 @@ extzero, //Output of zero-extend unit
 adder1out,	//Output of adder which adds PC and 4-add1
 adder2out,	//Output of adder which adds PC+4 and 2 shifted sign-extend result-add2
 writedata,
-pcreg,		//thw value to be written in register
+pcreg,		//the value to be written in register
 nextpc,		//pc+4
 sextad;	//Output of shift left 2 unit 
 wire [5:0] inst31_26;	//31-26 bits of instruction
@@ -32,7 +32,7 @@ inst20_16,	//20-16 bits of instruction
 inst15_11,	//15-11 bits of instruction
 out0;
 wire aluN, aluV;   //if alu result negative 1, if alu result overflowed 1
-reg balncheck;
+// reg balncheck;
 wire [15:0] inst15_0;	//15-0 bits of instruction
 wire nSignal_q, zSignal_q;
 wire [31:0] instruc,	//current instruction
@@ -43,7 +43,9 @@ wire [2:0] gout;	//Output of ALU control unit
 wire zout,	//Zero output of ALU
 pcsrc,	//Output of AND gate with Branch and ZeroOut inputs
 //Control signals
-regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori,jmnor;
+regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori,jmnor,bgtzal,and_bgtzal,balncheck;
+
+assign and_bgtzal = bgtzal && ~zout && ~aluN; // and gate for bgtzal instruction connected bgtzal, not zout and not aluN
 
 //32-size register file (32 bit(1 word) for each register)
 reg [31:0] registerfile[0:31];
@@ -64,8 +66,8 @@ datmem[sum[4:0]+1]=writedata[23:16];
 datmem[sum[4:0]]=writedata[31:24];
 end
 assign nextpc = pc+4;
-// or baln, jmnor
-assign linkpc= baln|jmnor;
+// or baln, jmnor, and_bgtzal
+assign linkpc= baln | jmnor | and_bgtzal;
 
 
 //instruction memory
@@ -104,7 +106,7 @@ mult2_to_1_32 mult7(out7, datab, dataa, jrsal);
 mult2_to_1_32 mult2(out2, datab,out5,alusrc);
 
 //mux with MemToReg control
-mult2_to_1_32 mult3(out3, sum,dpack,memtoreg);
+mult2_to_1_32 mult3(out3, sum,dpack,memtoreg); // read data / alu result -> out3 (mux)
 
 //mux with dpack and out4
 mult2_to_1_32 mult8(out8, out4, dpack, jrsal);
@@ -135,6 +137,7 @@ assign balncheck = (baln)&&(aluN);
 
 //adder which adds PC and 4
 adder add1(pc,32'h4,adder1out);
+//adder1out = pc + 4
 
 //adder which adds PC+4 and 2 shifted sign-extend result
 adder add2(adder1out,sextad,adder2out);

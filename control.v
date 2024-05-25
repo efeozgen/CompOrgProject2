@@ -1,6 +1,6 @@
-module control(in,regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop2,ori,jrsal,baln,jmnor,nsignal_q);
+module control(in,regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop2,ori,jrsal,baln,jmnor,nsignal_q, bgtzal);
 input [5:0] in;
-output regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop2,ori,jrsal,baln,jmnor;
+output regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop2,ori,jrsal,baln,jmnor, bgtzal;
 input nsignal_q;
 wire rformat,lw,sw,beq;
 assign rformat=~|in;
@@ -11,6 +11,7 @@ assign ori=(~in[5]) & (~in[4]) & (in[3]) & (in[2]) & (~in[1]) & (in[0]);
 assign jrsal=(~in[5]) & (in[4]) & (~in[3]) & (~in[2]) & (~in[1]) & (in[0]);
 assign baln= (~in[5]) & (in[4]) & (in[3]) & (~in[2]) & (~in[1]) & (in[0]);
 assign jmnor=(~in[5]) & (~in[4]) & (~in[3]) & (~in[2]) & (~in[1]) & (~in[0]);
+assign bgtzal=(in[5]) & (~in[4]) & (~in[3]) & (~in[2]) & (~in[1]) & (in[0]); // bgtzal added
 assign regdest=rformat;
 assign alusrc=lw|sw;
 assign memtoreg=lw;

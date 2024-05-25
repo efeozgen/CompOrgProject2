@@ -1,0 +1,262 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/intelFPGA/18.1
+vadder
+Z0 !s110 1716626656
+!i10b 1
+!s100 Y;`Fz?LjC0QzPeNWf8_U<1
+I[2k:]DB]Cko_42KmKNZVZ1
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+Z2 dC:/Users/HP/Desktop/Projects/CompOrgProject2
+w955028208
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/adder.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/adder.v
+L0 1
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1716626656.000000
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/adder.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/adder.v|
+!i113 1
+Z5 o-work work
+Z6 tCvgOpt 0
+valu32
+R0
+!i10b 1
+!s100 ?FL0FbN>EjbzZn9lG2JGd2
+IYe81m6B<6A9D9Q_lYE@<[1
+R1
+R2
+Z7 w1716620022
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/alu32.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/alu32.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/alu32.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/alu32.v|
+!i113 1
+R5
+R6
+valucont
+R0
+!i10b 1
+!s100 N=<czV>dP^8a=;4UB9gJE0
+I?aWfUW[Uizk6O`hgc`mPM0
+R1
+R2
+R7
+8C:\Users\HP\Desktop\Projects\CompOrgProject2\alucont.v
+FC:\Users\HP\Desktop\Projects\CompOrgProject2\alucont.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:\Users\HP\Desktop\Projects\CompOrgProject2\alucont.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:\Users\HP\Desktop\Projects\CompOrgProject2\alucont.v|
+!i113 1
+R5
+R6
+vcontrol
+R0
+!i10b 1
+!s100 `gjz;eBD<^P47]Wn86D@e0
+I45NMmGD8e27U:LTdLfh3Y0
+R1
+R2
+w1716620924
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/control.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/control.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/control.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/control.v|
+!i113 1
+R5
+R6
+vflipflop
+R0
+!i10b 1
+!s100 [7;YQ@_:KZa<cW=4Vm5_20
+IdiICcLcPEiJhD=bXbcmBJ0
+R1
+R2
+R7
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/flipflop.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/flipflop.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/flipflop.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/flipflop.v|
+!i113 1
+R5
+R6
+vmult2_to_1_32
+R0
+!i10b 1
+!s100 ^aXF>kbOQm5iDYT=bV7M11
+IBZ:nn93Ji2g25^XGRXoVI0
+R1
+R2
+R7
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/mult2_to_1_32.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/mult2_to_1_32.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/mult2_to_1_32.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/mult2_to_1_32.v|
+!i113 1
+R5
+R6
+vmult2_to_1_5
+R0
+!i10b 1
+!s100 k]2`0V2=b67f6kc:ca8eK0
+IIZFdATnYlY3=lZ=Q73LbZ3
+R1
+R2
+w955028066
+8C:\Users\HP\Desktop\Projects\CompOrgProject2\mult2_to_1_5.v
+FC:\Users\HP\Desktop\Projects\CompOrgProject2\mult2_to_1_5.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:\Users\HP\Desktop\Projects\CompOrgProject2\mult2_to_1_5.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:\Users\HP\Desktop\Projects\CompOrgProject2\mult2_to_1_5.v|
+!i113 1
+R5
+R6
+vnor_gate
+R0
+!i10b 1
+!s100 aT5J4R3ZbkP6:czYCB4LB3
+I71LAzRFln@G70YSVgePzK3
+R1
+R2
+w1715952670
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/nor_gate.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/nor_gate.v
+L0 2
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/nor_gate.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/nor_gate.v|
+!i113 1
+R5
+R6
+vprocessor
+R0
+!i10b 1
+!s100 @H1?JmJL[1cl2^c1BcEY`1
+I]:n;FZM7g`Vj:`iJ7@8n^1
+R1
+R2
+w1716626641
+8C:\Users\HP\Desktop\Projects\CompOrgProject2\processor.v
+FC:\Users\HP\Desktop\Projects\CompOrgProject2\processor.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:\Users\HP\Desktop\Projects\CompOrgProject2\processor.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:\Users\HP\Desktop\Projects\CompOrgProject2\processor.v|
+!i113 1
+R5
+R6
+vshift
+R0
+!i10b 1
+!s100 GWP55OEfIRVA_6M>iSY8d2
+IG^cbHdSN19gh>z21E2<=C0
+R1
+R2
+w955028064
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/shift.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/shift.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/shift.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/shift.v|
+!i113 1
+R5
+R6
+vsignext
+R0
+!i10b 1
+!s100 JAEfRFLIAaX=@V<j@h[jS1
+IM0RG3g=5HaPOKT0o>nn@M0
+R1
+R2
+w1335991790
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/signext.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/signext.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/signext.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/signext.v|
+!i113 1
+R5
+R6
+vzeroext
+R0
+!i10b 1
+!s100 RSK[RH@IVG88iUA?j]GWB0
+IEbHBe9?3cZMoMa4[J9Z172
+R1
+R2
+w1715949258
+8C:/Users/HP/Desktop/Projects/CompOrgProject2/zeroext.v
+FC:/Users/HP/Desktop/Projects/CompOrgProject2/zeroext.v
+L0 1
+R3
+r1
+!s85 0
+31
+R4
+!s107 C:/Users/HP/Desktop/Projects/CompOrgProject2/zeroext.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/Users/HP/Desktop/Projects/CompOrgProject2/zeroext.v|
+!i113 1
+R5
+R6
