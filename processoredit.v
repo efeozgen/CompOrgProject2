@@ -130,11 +130,11 @@ mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
 mult2_to_1_32 mult_jump(mult_jump_out , out4, sextad, jump); // new ?????
 
 // mux with select bit is or gate of jrsal/jmnor, input bits dpack, mult_jump_out, output of out7
-mult2_to_1_32 mult7(out7, mult_jump_out, dpack, or_jmnor_jrsal); // new ?????
+mult2_to_1_32 mult7(out7, dpack, mult_jump_out,  or_jmnor_jrsal); // new ?????
 
-mult2_to_1_32 mult8(out8, out7, extad, balncheck); // new ?????
+mult2_to_1_32 mult8(out8, extad, out7,  balncheck); // new ?????
 
-mult2_to_1_32 mult9(out9, out8, dataa, brnvcheck); // new ?????
+mult2_to_1_32 mult9(out9, dataa, out8,  brnvcheck); // new ?????
 
 // YOK
 // mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor); 
