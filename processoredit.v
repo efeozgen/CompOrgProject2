@@ -200,7 +200,7 @@ end
 //read initial data from files given in hex
 initial
 begin
-$readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initIM.dat",datmem); //read Data Memory
+$readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initDM.dat",datmem); //read Data Memory
 $readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initIM.dat",mem);//read Instruction Memory
 $readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initReg.dat",registerfile);//read Register File
 
