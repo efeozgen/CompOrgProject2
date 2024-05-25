@@ -13,7 +13,8 @@ begin
 	if (f1&~(f3))gout=3'b110;		//function code=0x10,ALU control=110 (sub)
 	if (f2&f0)gout=3'b001;			//function code=x1x1,ALU control=001 (or)
 	if (f2&~(f0))gout=3'b000;		//function code=x1x0,ALU control=000 (and)
-	if (aluop1&~aluop0&~f3&f2&~f1&f0) gout=3'b011;
+	if (~(f3) & f2 & ~(f1) & f0)gout = 3'b100;	// ALU control = 100 (brnv)
+	if (~f3 & f2 & ~f1 & ~f0)gout = 3'b011; // jmnor,ALU control = 100 we decide to change funct code as funct = 10 (01010) same as NOR
 end
 // I-type ori instruction
 if (aluop1 & aluop0) begin
