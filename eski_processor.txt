@@ -16,7 +16,6 @@ out8,
 out9,
 out10,
 out11,
-mult_jump_out,
 pcnext,         //output of baln check
 sum,		//ALU result
 extad,	//Output of sign-extend unit
@@ -34,7 +33,6 @@ inst20_16,	//20-16 bits of instruction
 inst15_11,	//15-11 bits of instruction
 out0;
 wire aluN, aluV;   //if alu result negative 1, if alu result overflowed 1
-reg aluNreg, aluVreg;   
 // reg balncheck;
 wire [15:0] inst15_0;	//15-0 bits of instruction
 wire nSignal_q, zSignal_q;
@@ -46,9 +44,9 @@ wire [2:0] gout;	//Output of ALU control unit
 wire zout,	//Zero output of ALU
 pcsrc,	//Output of AND gate with Branch and ZeroOut inputs
 //Control signals
-regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori,jmnor,bgtzal,and_bgtzal,balncheck,jump,brnv, brnvcheck;
+regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,jrsal,baln,ori,jmnor,bgtzal,and_bgtzal,balncheck,jump;
 
-assign and_bgtzal = bgtzal && ~zout && ~aluNreg; // and gate for bgtzal instruction connected bgtzal, not zout and not aluN
+assign and_bgtzal = bgtzal && ~zout && ~aluN; // and gate for bgtzal instruction connected bgtzal, not zout and not aluN
 
 //32-size register file (32 bit(1 word) for each register)
 reg [31:0] registerfile[0:31];
@@ -72,8 +70,8 @@ assign nextpc = pc+4;
 // or baln, jmnor, and_bgtzal
 assign linkpc= baln | jmnor | and_bgtzal;
 
-// or jmnor, jrsal
-assign or_jmnor_jrsal = jmnor | jrsal;
+// or baln, jmnor for linkmux
+assign linkmux = baln | jmnor;
 
 //instruction memory
 //4-byte instruction
@@ -97,76 +95,51 @@ always @(posedge clk)
 assign dpack={datmem[sum[5:0]],datmem[sum[5:0]+1],datmem[sum[5:0]+2],datmem[sum[5:0]+3]};
 
 //multiplexers
-
+//baln check
+mult2_to_1_32 multbaln(out9,out7,extad,balncheck);
 //mux with RegDst control
 mult2_to_1_5  mult1(out0, instruc[20:16],instruc[15:11],regdest);
-
-//Değiştirdik not!
+//mux to check jmnor
+mult2_to_1_32 multjmnor(pcnext,out9,dpack,jmnor);
+//mux with jrsal signal and sum
+mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
+mult2_to_1_32 mult7(out7, datab, dataa, jrsal);
 //mux with ALUSrc control
+//Değiştirdik not!
 mult2_to_1_32 mult2(out2, datab,out5,alusrc);
-// //mux with ALUSrc control INITIAL
-// mult2_to_1_32 mult2(out2, datab,extad,alusrc);
 
 //mux with MemToReg control
 mult2_to_1_32 mult3(out3, sum,dpack,memtoreg); // read data / alu result -> out3 (mux)
 
+//mux with dpack and out4
+mult2_to_1_32 mult8(out8, out4, dpack, jrsal);
+
 //mux with (Branch&ALUZero) control
 mult2_to_1_32 mult4(out4, adder1out,adder2out,pcsrc);
+
+// mux with select bit jump -> out4 / shiftleft2 ??
+mult2_to_1_32 mult9(out11 , out4, sextad, jump);
 
 //mux with Ori control
 mult2_to_1_32 mult5(out5, extad, extzero, ori);
 
-//mux with jrsal signal and sum
-mult2_to_1_32 mult6(out6, sum, dataa, jrsal);
-
-// YOK
-// mult2_to_1_32 mult7(out7, datab, dataa, jrsal); 
-
-// YOK 
-//mux with dpack and out4
-// mult2_to_1_32 mult8(out8, out4, dpack, jrsal); 
-
-// mux with select bit jump -> out4 / shiftleft2 ??
-mult2_to_1_32 mult_jump(mult_jump_out , out4, sextad, jump); // new ?????
-
-// mux with select bit is or gate of jrsal/jmnor, input bits dpack, mult_jump_out, output of out7
-mult2_to_1_32 mult7(out7, dpack, mult_jump_out,  or_jmnor_jrsal); // new ?????
-
-mult2_to_1_32 mult8(out8, extad, out7,  balncheck); // new ?????
-
-mult2_to_1_32 mult9(out9, dataa, out8,  brnvcheck); // new ?????
-
-// YOK
-// mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor); 
-
-// YOK
-// mult2_to_1_32 multjmnor(pcnext,out9,dpack,jmnor); 
-
-// OUT 7 YOK
-//baln check
-// mult2_to_1_32 multbaln(out9,out7,extad,balncheck); 
-
-//mux to check jmnor
-
 mult2_to_1_32 multpc(out10,out1,nextpc,linkpc);
 
+mult2_to_1_32 multlinkpc(pcreg,pcnext,nextpc,jmnor);
 
 flipflop flipflop(nSignal, clk, nSignal_q);
 flipflop flipflop2(zSignal, clk, zSignal_q);
 
 // load pc
-always @(posedge clk)
-// pc=pcnext;
-pc=out9;
+always @(negedge clk)
+pc=pcnext;
 
 // alu, adder and control logic connections
 
 //ALU unit
 alu32 alu1(sum,dataa,out2,gout,zout,aluN,aluV);
 
-assign balncheck = (baln)&&(aluNreg);
-
-assign brnvcheck = (brnv)&&(~aluVreg);
+assign balncheck = (baln)&&(aluN);
 
 //adder which adds PC and 4
 adder add1(pc,32'h4,adder1out);
@@ -176,7 +149,8 @@ adder add1(pc,32'h4,adder1out);
 adder add2(adder1out,sextad,adder2out);
 
 //Control unit
-control cont(instruc[31:26],regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,aluop1,aluop0,ori,jrsal,baln,jmnor,nsignal_q, bgtzal,jump,brnv);
+control cont(instruc[31:26],regdest,alusrc,memtoreg,regwrite,memread,memwrite,branch,
+aluop1,aluop0,ori,jrsal,baln,jmnor,nsignal_q);
 
 //Sign extend unit
 signext sext(instruc[15:0],extad);
@@ -190,19 +164,13 @@ shift shift2(sextad,extad);
 //AND gate
 assign pcsrc=branch && zout; 
 
-always @(posedge clk)
-begin
-    aluNreg = aluN;
-    aluVreg = aluV;
-end
-
 //initialize datamemory,instruction memory and registers
 //read initial data from files given in hex
 initial
 begin
-$readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initDM.dat",datmem); //read Data Memory
-$readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initIM.dat",mem);//read Instruction Memory
-$readmemh("C:\\Users\\HP\\Desktop\\Projects\\CompOrgProject2\\initReg.dat",registerfile);//read Register File
+$readmemh("initDm.dat",datmem); //read Data Memory
+$readmemh("initIM.dat",mem);//read Instruction Memory
+$readmemh("initReg.dat",registerfile);//read Register File
 
 	for(i=0; i<31; i=i+1)
 	$display("Instruction Memory[%0d]= %h  ",i,mem[i],"Data Memory[%0d]= %h   ",i,datmem[i],
